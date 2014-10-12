@@ -8,7 +8,6 @@
 
 #import "UrlHandler.h"
 @implementation UrlHandler
-int (^sum)(int, int) = ^(int a, int b) { return a + b; };
 -(BOOL)checkIfFileURL{
     return FALSE;
 }
