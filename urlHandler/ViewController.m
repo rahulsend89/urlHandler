@@ -16,9 +16,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [[UrlHandler sharedInstance] testURL:@"http//:google.com" :^(NSError *error, id returnObject) {
-        if(error!=nil){
-            NSLog(@"returnObject : ");
+    [[UrlHandler sharedInstance] testURL:@"http://google.com" :^(NSError *error, id returnObject) {
+        if(error != (NSError*)[NSNull null] && ![returnObject isEqualToString:@"notReachable"]){
+            NSLog(@"returnObject : %@",returnObject);
         }else{
             NSLog(@"error : %@",error);
         }

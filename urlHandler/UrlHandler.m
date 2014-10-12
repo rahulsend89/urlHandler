@@ -61,8 +61,9 @@ int (^sum)(int, int) = ^(int a, int b) { return a + b; };
                         [[NSURLCache sharedURLCache] storeCachedResponse:_cachedResponse forRequest:(NSURLRequest *)request];
                         NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
                         _completionHandler(error,string);
+                    }else{
+                        _completionHandler(error,@"notReachable");
                     }
-                    _completionHandler(error,@"URL is not reachable");
                 }
             });
         }else{
