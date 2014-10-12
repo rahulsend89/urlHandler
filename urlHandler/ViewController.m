@@ -16,10 +16,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [[UrlHandler sharedInstance] testURL:@"http://atd6.spinr.in/marketing_services/get_tag_list?partner_id=unmu-in&channel_id=unmu-in-ios&tag_name=top20&product_type=item&offset=0&limit=60" :^(NSError *error, id returnObject) {
-        NSLog(@"returnObject : %@",returnObject);
+    [[UrlHandler sharedInstance] testURL:@"http//:google.com" :^(NSError *error, id returnObject) {
+        if(error!=nil){
+            NSLog(@"returnObject : ");
+        }else{
+            NSLog(@"error : %@",error);
+        }
     }];
-    NSLog(@"the above code is not bloacking down code");
 }
 -(void)testURLFunction{
     

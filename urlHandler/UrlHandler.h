@@ -14,7 +14,9 @@
 -(BOOL)checkIfFileURL;
 -(void)testMyCode;
 @property (nonatomic, strong) void(^completionHandler)(NSError *, id responseObject);
+@property (nonatomic,strong)void(^reachableBlock)(BOOL val);
 -(void)testURL: (NSString*) myURL : (void (^)(NSError *error, id returnObject))handler;
 + (UrlHandler*)sharedInstance;
 -(void)initCache;
+-(void)isNetWorking : (void(^)(BOOL val))callBack;
 @end
