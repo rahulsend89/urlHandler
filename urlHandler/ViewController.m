@@ -24,7 +24,7 @@
         }
     }];
     
-    [[UrlHandler sharedInstance] downloadFileWithURL:@"http://spaceflight.nasa.gov/gallery/images/apollo/apollo17/hires/s72-55482.jpg" withName:@"img.png" progressBlock:^(float pre) {
+    [[UrlHandler sharedInstance] downloadFileWithURL:@"http://www.socialtalent.co/wp-content/uploads/blog-content/so-logo.png" withName:@"img.png" progressBlock:^(float pre) {
         NSLog(@"progress :%f",pre);
     } completionBlock:^(NSError *error, id returnObject) {
         NSLog(@"error : %@:%@",error,returnObject);
