@@ -16,12 +16,18 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [[UrlHandler sharedInstance] testURL:@"http://google.com" :^(NSError *error, id returnObject) {
+    [[UrlHandler sharedInstance] basicURL:@"http://google.com" :^(NSError *error, id returnObject) {
         if(error != (NSError*)[NSNull null] && ![returnObject isEqualToString:@"notReachable"]){
             NSLog(@"returnObject : %@",returnObject);
         }else{
             NSLog(@"error : %@",error);
         }
+    }];
+    
+    [[UrlHandler sharedInstance] downloadFileWithURL:@"http://spaceflight.nasa.gov/gallery/images/apollo/apollo17/hires/s72-55482.jpg" withName:@"img.png" progressBlock:^(float pre) {
+        NSLog(@"progress :%f",pre);
+    } completionBlock:^(NSError *error, id returnObject) {
+        NSLog(@"error : %@:%@",error,returnObject);
     }];
 }
 -(void)testURLFunction{
