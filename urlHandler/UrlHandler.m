@@ -7,6 +7,7 @@
 //
 
 #import "UrlHandler.h"
+#define REQUESTTIMEOUT 10.0
 @interface UrlHandler()
 @property (strong, nonatomic) NSURLConnection *connection;
 @property (strong, nonatomic) NSOutputStream *downloadStream;
@@ -27,6 +28,14 @@
         sharedInstance = [[UrlHandler alloc] init];
     }
     return sharedInstance;
+}
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _currentVal = 0;
+    }
+    return self;
 }
 -(void)isNetWorking : (void(^)(BOOL val))callBack{
     Reachability *reachability = [Reachability reachabilityWithHostname:@"www.google.com"];
@@ -54,10 +63,36 @@
     }
     return documentsDirectory;
 }
+-(void)downloadListOfListWithArray:(NSArray*)fileList
+                     progressBlock:(void (^)(float pre,int current))progress
+                   completionBlock:(void (^)(NSError *error, id returnObject,int currentObj))handler
+{
+    if (!fileList.count) {
+        return;
+    }
+    _multiCompletionHandler = handler;
+    _multiprogressHandler = progress;
+    NSURL *tempURL;
+    NSString* filename;
+    NSString *myURL;
+    myURL = [fileList objectAtIndex:0];
+    tempURL = [NSURL URLWithString:myURL];
+    filename = [tempURL lastPathComponent];
+    [[UrlHandler sharedInstance] downloadFileWithURL:myURL withName:filename progressBlock:^(float pre) {
+        _multiprogressHandler(pre,_currentVal);
+    } completionBlock:^(NSError *error, id returnObject) {
+        _multiCompletionHandler(error,returnObject,_currentVal);
+        _currentVal++;
+        NSMutableArray *array = [NSMutableArray arrayWithArray:fileList];
+        [array removeObjectAtIndex:0];        
+        [self downloadListOfListWithArray:array progressBlock:_multiprogressHandler completionBlock:_multiCompletionHandler];
+    }];
+}
+
 -(void)downloadFileWithURL:(NSString*)myURL
-withName:(NSString*)fileName
-progressBlock:(void (^)(float pre))progress
-completionBlock:(void (^)(NSError *error, id returnObject))handler
+                  withName:(NSString*)fileName
+             progressBlock:(void (^)(float pre))progress
+           completionBlock:(void (^)(NSError *error, id returnObject))handler
 {
     _completionHandler = handler;
     _progressHandler = progress;
@@ -72,7 +107,7 @@ completionBlock:(void (^)(NSError *error, id returnObject))handler
                 self.downloadStream = [NSOutputStream outputStreamToFileAtPath:filePath append:NO];
                 NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:myURL]
                                                          cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                     timeoutInterval:3.0];
+                                                     timeoutInterval:REQUESTTIMEOUT];
                 if (!request) {
                     self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
                                                      code:-1
@@ -197,7 +232,7 @@ completionBlock:(void (^)(NSError *error, id returnObject))handler
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                 NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:myURL]
                                                          cachePolicy:NSURLRequestReturnCacheDataElseLoad
-                                                     timeoutInterval:3.0];
+                                                     timeoutInterval:REQUESTTIMEOUT];
                 NSCachedURLResponse* cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
                 if(cachedResponse!=nil){
                     NSError * error = nil;
