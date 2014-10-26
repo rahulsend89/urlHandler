@@ -21,6 +21,7 @@
 @property (nonatomic)int currentVal;
 @property (nonatomic,strong)NSString *currentFile;
 -(void)basicURL: (NSString*) myURL : (void (^)(NSError *error, id returnObject))handler;
+-(void)basicFormURL: (NSString*) myURL : (NSString*)HTTPMethod :(NSDictionary*)dictionary : (void (^)(NSError *error, id returnObject))handler;
 + (UrlHandler*)sharedInstance;
 -(void)initCache;
 -(void)isNetWorking : (void(^)(BOOL val))callBack;

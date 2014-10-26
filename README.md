@@ -44,3 +44,18 @@ NSArray *array = @[@"http://wfiles.brothersoft.com/a/awesome-ice-block_178817-19
     NSLog(@"error : %@:%@:%d",error,returnObject,currentObj);
 }];
 ```
+
+Form Request .
+```objective-c
+NSDictionary *dic = @{
+    @"name":@"awesome",
+    @"email":@"awesome@cool.awesome"
+};
+[[UrlHandler sharedInstance] basicFormURL:@"http://10.0.1.5/testPost.php" :@"POST" :dic :^(NSError *error, id returnObject) {
+    if(error != (NSError*)[NSNull null] && ![returnObject isEqualToString:@"notReachable"]){
+        NSLog(@"returnObject : %@",returnObject);
+    }else{
+        NSLog(@"error : %@",error);
+    }
+}];
+```

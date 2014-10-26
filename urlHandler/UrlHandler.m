@@ -261,6 +261,68 @@
     }];
     
 }
+-(void)basicFormURL: (NSString*) myURL : (NSString*)urlMethod :(NSDictionary*)dictionary : (void (^)(NSError *error, id returnObject))handler{
+    _completionHandler = handler;
+    [[UrlHandler sharedInstance] isNetWorking:^(BOOL val) {
+        if(val){
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:myURL]
+                                                                                   cachePolicy:NSURLRequestReturnCacheDataElseLoad
+                                                                               timeoutInterval:REQUESTTIMEOUT];
+                [request setHTTPMethod:urlMethod];
+                NSDate *dt = [[NSDate alloc] initWithTimeIntervalSinceNow:0];
+                int timestamp = [dt timeIntervalSince1970];
+                NSString *formRequestBodyBoundary = [NSString stringWithFormat:@"BOUNDARY-%d-%@", timestamp, [[NSProcessInfo processInfo] globallyUniqueString]];
+                [request addValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", formRequestBodyBoundary] forHTTPHeaderField:@"Content-Type"];
+                NSMutableData *formRequestBody = [NSMutableData data];
+                [formRequestBody appendData:[[NSString stringWithFormat:@"--%@\r\n",formRequestBodyBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
+                NSEnumerator *enumerator = [dictionary keyEnumerator];
+                NSString *key;
+                NSMutableArray *HTTPRequestBodyParts = [NSMutableArray array];
+                while ((key = [enumerator nextObject])) {
+                    NSMutableData *someData = [[NSMutableData alloc] init];
+                    [someData appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
+                    [someData appendData:[[NSString stringWithFormat:@"%@", [dictionary objectForKey:key]] dataUsingEncoding:NSUTF8StringEncoding]];
+                    [HTTPRequestBodyParts addObject:someData];
+                }
+                NSMutableData *resultingData = [NSMutableData data];
+                NSUInteger count = [HTTPRequestBodyParts count];
+                [HTTPRequestBodyParts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                    [resultingData appendData:obj];
+                    if (idx != count - 1) {
+                        [resultingData appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", formRequestBodyBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
+                    }
+                }];
+                [formRequestBody appendData:resultingData];
+                [formRequestBody appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", formRequestBodyBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
+                [request setHTTPBody:formRequestBody];
+                NSCachedURLResponse* cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
+                if(cachedResponse!=nil){
+                    NSError * error = nil;
+                    NSString *string = [[NSString alloc] initWithData:[cachedResponse data] encoding:NSUTF8StringEncoding];
+                    _completionHandler(error,string);
+                }else{
+                    NSError * error = nil;
+                    NSURLResponse *response = nil;
+                    NSData *data = [NSURLConnection sendSynchronousRequest:request
+                                                         returningResponse:&response
+                                                                     error:&error];
+                    if (error == nil)
+                    {
+                        NSCachedURLResponse *_cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:data];
+                        [[NSURLCache sharedURLCache] storeCachedResponse:_cachedResponse forRequest:(NSURLRequest *)request];
+                        NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                        _completionHandler(error,string);
+                    }else{
+                        _completionHandler(error,@"notReachable");
+                    }
+                }
+            });
+        }else{
+            NSLog(@"net is not reachable");
+        }
+    }];
+}
 -(void)testMyCode{
     //_completionHandler(ns);
 }
