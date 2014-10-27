@@ -1,9 +1,9 @@
 Pod::Spec.new do |s|
   s.name             = "urlHandler"
   s.version          = "0.1.0"
-  s.summary          = "Easy way to work around NSURLRequest."
+  s.summary          = "Easy way to work with NSURL in Objective-C."
   s.description      = <<-DESC
-                       urlHandler
+                       #urlHandler
 ==========
 
 Easy way to work with NSURL in Objective-C 

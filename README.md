@@ -3,7 +3,14 @@ urlHandler
 
 Easy way to work with NSURL in Objective-C 
 
-How to use :
+## CocoaPods
+
+urlHandler is available through [CocoaPods](http://cocoapods.org). To install
+it, simply add the following line to your Podfile:
+
+    pod "urlHandler"
+
+## Usage
 
 initCache in AppDelegate didFinishLaunchingWithOptions 
 ```objective-c
@@ -59,3 +66,11 @@ NSDictionary *dic = @{
     }
 }];
 ```
+
+## Author
+
+Rahul Malik, rahul.send89@gmail.com
+
+## License
+
+urlHandler is available under the MIT license. See the LICENSE file for more info.
