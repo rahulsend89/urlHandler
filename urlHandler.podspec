@@ -64,12 +64,14 @@ NSDictionary *dic = @{
     }
 }];
 ```
+DESC
+
   s.homepage         = "http://github.com/rahulsend89/urlHandler"
   s.license          = 'MIT'
   s.author           = { "Rahul Malik" => "rahul.send89@gmail.com" }
   s.source           = { :git => "https://github.com/rahulsend89/urlHandler.git", :tag => s.version.to_s }
   s.platform     = :ios, '7.0'
   s.requires_arc = true
-  s.source_files = 'UrlHandler.{h,m}'
+  s.source_files = 'urlHandler/UrlHandler.{h,m}'
   s.dependency 'Reachability'
 end
