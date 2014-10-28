@@ -11,8 +11,10 @@
 @interface UrlHandler()
 @property (strong, nonatomic) NSURLConnection *connection;
 @property (strong, nonatomic) NSOutputStream *downloadStream;
+@property (strong, nonatomic) NSInputStream *uploadStream;
 @property (nonatomic, strong) NSString *mainfilename;
 @property (getter = isDownloading) BOOL downloading;
+@property (getter = isUploading) BOOL uploading;
 @property long long expectedContentLength;
 @property long long progressContentLength;
 @property (nonatomic, strong) NSError *error;
@@ -84,7 +86,7 @@
         _multiCompletionHandler(error,returnObject,_currentVal);
         _currentVal++;
         NSMutableArray *array = [NSMutableArray arrayWithArray:fileList];
-        [array removeObjectAtIndex:0];        
+        [array removeObjectAtIndex:0];
         [self downloadListOfListWithArray:array progressBlock:_multiprogressHandler completionBlock:_multiCompletionHandler];
     }];
 }
@@ -137,7 +139,6 @@
                     
                     [self downloadCompleted:NO];
                 }
-                
             });
         }else{
             NSLog(@"net is not reachable");
@@ -165,6 +166,9 @@
 }
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
+    if (!self.downloading) {
+        return;
+    }
     NSInteger       dataLength = [data length];
     const uint8_t * dataBytes  = [data bytes];
     NSInteger       bytesWritten;
@@ -186,12 +190,15 @@
     _progressHandler((float) self.progressContentLength / (float) self.expectedContentLength);
 }
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    _completionHandler(nil,self.mainfilename);
+    if (self.mainfilename) {
+        _completionHandler(nil,self.mainfilename);
+    }else{
+        _completionHandler(nil,@"uploadingCompleted");
+    }
 }
 -(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     _completionHandler(error,@"downloadingError");
 }
-
 -(void)downloadCompleted:(BOOL)val{
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
@@ -222,9 +229,20 @@
             if ([fileManager fileExistsAtPath:self.mainfilename])
                 [fileManager removeItemAtPath:self.mainfilename error:&error];
         
-        _completionHandler(error,@"downloadFailed");
+        _completionHandler(error,@"ConnectionFailed");
     }
 }
+
+
+- (void)connection:(NSURLConnection *)connection   didSendBodyData:(NSInteger)bytesWritten
+ totalBytesWritten:(NSInteger)totalBytesWritten
+totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite{
+    _progressHandler((float) totalBytesWritten / (float) totalBytesExpectedToWrite);
+}
+
+
+
+
 -(void)basicURL: (NSString*) myURL : (void (^)(NSError *error, id returnObject))handler{
     _completionHandler = handler;
     [[UrlHandler sharedInstance] isNetWorking:^(BOOL val) {
@@ -261,19 +279,83 @@
     }];
     
 }
+-(void)multipleFormUrl:(NSString*) myURL :(NSString*)urlMethod
+        postDictionary:(NSDictionary*)dictionary
+        progressBlock :(void (^)(float pre))progress
+       completionBlock:(void (^)(NSError *error, id returnObject))handler{
+    _completionHandler = handler;
+    _progressHandler = progress;
+    [[UrlHandler sharedInstance] isNetWorking:^(BOOL val) {
+        if(val){
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:myURL]
+                                                                       cachePolicy:NSURLRequestReturnCacheDataElseLoad
+                                                                   timeoutInterval:REQUESTTIMEOUT];
+                [request setHTTPMethod:urlMethod];
+                NSDate *dt = [[NSDate alloc] initWithTimeIntervalSinceNow:0];
+                int timestamp = [dt timeIntervalSince1970];
+                NSString *charset = (NSString *)CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
+                NSString *formRequestBodyBoundary = [NSString stringWithFormat:@"BOUNDARY-%d-%@", timestamp, [[NSProcessInfo processInfo] globallyUniqueString]];
+                [request addValue:[NSString stringWithFormat:@"multipart/form-data; charset=%@; boundary=%@",charset, formRequestBodyBoundary] forHTTPHeaderField:@"Content-Type"];
+                NSMutableData *formRequestBody = [NSMutableData data];
+                [formRequestBody appendData:[[NSString stringWithFormat:@"--%@\r\n",formRequestBodyBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
+                NSMutableArray *HTTPRequestBodyParts = [NSMutableArray array];
+                NSData *filePath;
+                for (NSString*key in dictionary) {
+                    if ([key isEqualToString:@"file"]) {
+                        NSDictionary *fileInfo = [dictionary objectForKey:key];
+                        NSMutableData *someData = [[NSMutableData alloc] init];
+                        [someData appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", [fileInfo objectForKey:@"key"],[fileInfo objectForKey:@"fileName"]] dataUsingEncoding:NSUTF8StringEncoding]];
+                        [someData appendData:[[NSString stringWithFormat:@"Content-Type: %@\r\n\r\n", [fileInfo objectForKey:@"contentType"]] dataUsingEncoding:NSUTF8StringEncoding]];
+                        filePath = [fileInfo objectForKey:@"data"];
+                        [someData appendData:filePath];
+                        [HTTPRequestBodyParts addObject:someData];
+                    }else{
+                        NSMutableData *someData = [[NSMutableData alloc] init];
+                        [someData appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
+                        [someData appendData:[[NSString stringWithFormat:@"%@", [dictionary objectForKey:key]] dataUsingEncoding:NSUTF8StringEncoding]];
+                        [HTTPRequestBodyParts addObject:someData];
+                    }
+                }
+                
+                NSMutableData *resultingData = [NSMutableData data];
+                NSUInteger count = [HTTPRequestBodyParts count];
+                [HTTPRequestBodyParts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                    [resultingData appendData:obj];
+                    if (idx != count - 1) {
+                        [resultingData appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", formRequestBodyBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
+                    }
+                }];
+                [formRequestBody appendData:resultingData];
+                [formRequestBody appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", formRequestBodyBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
+                [request setHTTPBody:formRequestBody];
+                self.connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
+                [self.connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+                [self.connection start];
+                if (!self.connection) {
+                    self.error = [NSError errorWithDomain:[NSBundle mainBundle].bundleIdentifier
+                                                     code:-1
+                                                 userInfo:@{@"message": @"undefined NSURLConnection", @"function" : @(__FUNCTION__), @"NSURLRequest" : request}];
+                    
+                }
+            });
+        }
+    }];
+}
 -(void)basicFormURL: (NSString*) myURL : (NSString*)urlMethod :(NSDictionary*)dictionary : (void (^)(NSError *error, id returnObject))handler{
     _completionHandler = handler;
     [[UrlHandler sharedInstance] isNetWorking:^(BOOL val) {
         if(val){
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                 NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:myURL]
-                                                                                   cachePolicy:NSURLRequestReturnCacheDataElseLoad
-                                                                               timeoutInterval:REQUESTTIMEOUT];
+                                                                       cachePolicy:NSURLRequestReturnCacheDataElseLoad
+                                                                   timeoutInterval:REQUESTTIMEOUT];
                 [request setHTTPMethod:urlMethod];
                 NSDate *dt = [[NSDate alloc] initWithTimeIntervalSinceNow:0];
                 int timestamp = [dt timeIntervalSince1970];
+                NSString *charset = (NSString *)CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
                 NSString *formRequestBodyBoundary = [NSString stringWithFormat:@"BOUNDARY-%d-%@", timestamp, [[NSProcessInfo processInfo] globallyUniqueString]];
-                [request addValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", formRequestBodyBoundary] forHTTPHeaderField:@"Content-Type"];
+                [request addValue:[NSString stringWithFormat:@"multipart/form-data; charset=%@; boundary=%@",charset, formRequestBodyBoundary] forHTTPHeaderField:@"Content-Type"];
                 NSMutableData *formRequestBody = [NSMutableData data];
                 [formRequestBody appendData:[[NSString stringWithFormat:@"--%@\r\n",formRequestBodyBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
                 NSEnumerator *enumerator = [dictionary keyEnumerator];

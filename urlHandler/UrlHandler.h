@@ -26,10 +26,15 @@
 -(void)initCache;
 -(void)isNetWorking : (void(^)(BOOL val))callBack;
 -(void)downloadFileWithURL:(NSString*)myURL
-withName:(NSString*)fileName
-progressBlock:(void (^)(float pre))progress
-completionBlock:(void (^)(NSError *error, id returnObject))handler;
+                  withName:(NSString*)fileName
+             progressBlock:(void (^)(float pre))progress
+           completionBlock:(void (^)(NSError *error, id returnObject))handler;
 -(void)downloadListOfListWithArray:(NSArray*)fileList
-progressBlock:(void (^)(float pre,int current))progress
-completionBlock:(void (^)(NSError *error, id returnObject,int currentObj))handler;
+                     progressBlock:(void (^)(float pre,int current))progress
+                   completionBlock:(void (^)(NSError *error, id returnObject,int currentObj))handler;
+
+-(void)multipleFormUrl:(NSString*) myURL :(NSString*)urlMethod
+        postDictionary:(NSDictionary*)dictionary
+        progressBlock :(void (^)(float pre))progress
+       completionBlock:(void (^)(NSError *error, id returnObject))handler;
 @end
