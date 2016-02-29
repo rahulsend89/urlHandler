@@ -199,6 +199,12 @@
 -(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     _completionHandler(error,@"downloadingError");
 }
+- (void)connection:(NSURLConnection *)connection   didSendBodyData:(NSInteger)bytesWritten
+ totalBytesWritten:(NSInteger)totalBytesWritten
+totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite{
+    _progressHandler((float) totalBytesWritten / (float) totalBytesExpectedToWrite);
+}
+
 -(void)downloadCompleted:(BOOL)val{
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
@@ -232,15 +238,6 @@
         _completionHandler(error,@"ConnectionFailed");
     }
 }
-
-
-- (void)connection:(NSURLConnection *)connection   didSendBodyData:(NSInteger)bytesWritten
- totalBytesWritten:(NSInteger)totalBytesWritten
-totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite{
-    _progressHandler((float) totalBytesWritten / (float) totalBytesExpectedToWrite);
-}
-
-
 
 
 -(void)basicURL: (NSString*) myURL : (void (^)(NSError *error, id returnObject))handler{

@@ -1,0 +1,6 @@
+framework module Pods_urlHandlerTests {
+  umbrella header "Pods-urlHandlerTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

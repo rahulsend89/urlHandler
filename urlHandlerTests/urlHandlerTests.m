@@ -9,11 +9,15 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "UrlHandler.h"
+
 @interface urlHandlerTests : XCTestCase
 
 @end
 
 @implementation urlHandlerTests
+
+NSString *baseURL = @"https://httpbin.org/";
 
 - (void)setUp {
     [super setUp];
@@ -25,16 +29,22 @@
     [super tearDown];
 }
 
-- (void)testExample {
-    // This is an example of a functional test case.
-    XCTAssert(YES, @"Pass");
-}
-
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
+- (void)testBasic{
+    NSString *description = [NSString stringWithFormat:@"GET %@", baseURL];
+    XCTestExpectation *expectation = [self expectationWithDescription:description];
+    __block BOOL testBool = false;
+    [[UrlHandler sharedInstance] basicURL:baseURL :^(NSError *error, id returnObject) {
+        if(error != (NSError*)[NSNull null] && ![returnObject isEqualToString:@"notReachable"]){
+            testBool = true;
+            [expectation fulfill];
+        }else{
+            testBool = false;
+        }
     }];
+    [self waitForExpectationsWithTimeout:3.0 handler:^(NSError * _Nullable error) {
+        
+    }];
+    XCTAssert(testBool, @"basic URL test");
 }
 
 @end
