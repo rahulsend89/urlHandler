@@ -46,7 +46,7 @@ NSString *baseURL = @"https://httpbin.org/";
     }];
     XCTAssert(testBool, @"basic URL test");
 }
-- (void) testDownload{
+- (void)testDownload{
     NSString *description = [NSString stringWithFormat:@"GET %@ : download", baseURL];
     XCTestExpectation *expectation = [self expectationWithDescription:description];
     __block BOOL testBool = false;
@@ -63,4 +63,24 @@ NSString *baseURL = @"https://httpbin.org/";
     }];
     XCTAssert(testBool, @"basic URL test Download");
 }
+
+-(void)testMultiDownload{
+    NSString *description = [NSString stringWithFormat:@"GET %@ : MultiDownload", baseURL];
+    XCTestExpectation *expectation = [self expectationWithDescription:description];
+    __block BOOL testBool = false;
+    NSString *finalURL = [baseURL stringByAppendingString:@"image/png"];
+    NSArray *array = @[finalURL];
+   [[UrlHandler sharedInstance] downloadListOfListWithArray:array progressBlock:^(float pre, int current) {
+        NSLog(@"progress :%f:%d",pre,current);
+    } completionBlock:^(NSError *error, id returnObject, int currentObj) {
+        [expectation fulfill];
+        testBool = true;
+        NSLog(@"error : %@:%@:%d",error,returnObject,currentObj);
+    }];
+    [self waitForExpectationsWithTimeout:3.0 handler:^(NSError * _Nullable error) {
+        
+    }];
+    XCTAssert(testBool, @"basic URL test Download");
+}
+
 @end
