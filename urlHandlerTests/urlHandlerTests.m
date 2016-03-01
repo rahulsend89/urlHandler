@@ -46,5 +46,21 @@ NSString *baseURL = @"https://httpbin.org/";
     }];
     XCTAssert(testBool, @"basic URL test");
 }
-
+- (void) testDownload{
+    NSString *description = [NSString stringWithFormat:@"GET %@ : download", baseURL];
+    XCTestExpectation *expectation = [self expectationWithDescription:description];
+    __block BOOL testBool = false;
+    NSString *finalURL = [baseURL stringByAppendingString:@"image/png"];
+    [[UrlHandler sharedInstance] downloadFileWithURL:finalURL withName:@"img.png" progressBlock:^(float pre) {
+        NSLog(@"progress :%f",pre);
+    } completionBlock:^(NSError *error, id returnObject) {
+        NSLog(@"error : %@:%@",error,returnObject);
+        [expectation fulfill];
+        testBool = true;
+    }];
+    [self waitForExpectationsWithTimeout:3.0 handler:^(NSError * _Nullable error) {
+        
+    }];
+    XCTAssert(testBool, @"basic URL test Download");
+}
 @end

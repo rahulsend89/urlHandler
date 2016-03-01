@@ -38,11 +38,11 @@
 //    } completionBlock:^(NSError *error, id returnObject, int currentObj) {
 //        NSLog(@"error : %@:%@:%d",error,returnObject,currentObj);
 //    }];
-    NSDictionary *dic = @{
-                          @"name":@"awesome",
-                          @"email":@"awesome@cool.awesome",
-                          };
-                          //[dic objectForKey:@"file"]
+//    NSDictionary *dic = @{
+//                          @"name":@"awesome",
+//                          @"email":@"awesome@cool.awesome",
+//                          };
+//                          //[dic objectForKey:@"file"]
 //    [[UrlHandler sharedInstance] basicFormURL:@"http://10.0.1.5/testPost.php" :@"POST" :dic :^(NSError *error, id returnObject) {
 //        if(error != (NSError*)[NSNull null] && ![returnObject isEqualToString:@"notReachable"]){
 //            NSLog(@"returnObject : %@",returnObject);
@@ -50,30 +50,15 @@
 //            NSLog(@"error : %@",error);
 //        }
 //    }];
-NSData *imageData = UIImageJPEGRepresentation([UIImage imageNamed:@"img.jpg"], 90);
-NSDictionary *fileInfo = @{
-    @"data":imageData,
-    @"contentType":@"image/jpeg",
-    @"fileName":@"image.jpeg",
-    @"key":@"userfile"
-};
-dic = @{
-                      @"comment":@"this is a comment",
-                      @"region":@"awesome@cool.awesome",
-                      @"pincode":@"100000",
-                      @"name":@"Rahul Emosewa",
-                      @"phone":@"9821829923",
-                      @"file":fileInfo
-                      };
-[[UrlHandler sharedInstance] multipleFormUrl:@"http://10.0.1.5/Afrimart_backEnd/post.php" :@"POST" postDictionary:dic progressBlock:^(float pre) {
-    NSLog(@"progress :%f",pre);
-} completionBlock:^(NSError *error, id returnObject) {
-    NSLog(@"error : %@:%@",error,returnObject);
-}];
+//NSData *imageData = UIImageJPEGRepresentation([UIImage imageNamed:@"img.jpg"], 90); NSDictionary *fileInfo = @{ @"data":imageData, @"contentType":@"image/jpeg", @"fileName":@"image.jpeg", @"key":@"userfile" }; dic = @{ @"comment":@"this is a comment", @"region":@"awesome@cool.awesome", @"pincode":@"100000", @"name":@"Rahul Emosewa", @"phone":@"9821829923", @"file":fileInfo
+//                      };
+//[[UrlHandler sharedInstance] multipleFormUrl:@"http://10.0.1.5/Afrimart_backEnd/post.php" :@"POST" postDictionary:dic progressBlock:^(float pre) {
+//    NSLog(@"progress :%f",pre);
+//} completionBlock:^(NSError *error, id returnObject) {
+//    NSLog(@"error : %@:%@",error,returnObject);
+//}];
 }
--(void)testURLFunction{
-    
-}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
