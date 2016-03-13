@@ -61,7 +61,7 @@ NSString *baseURL = @"https://httpbin.org/";
     [self waitForExpectationsWithTimeout:3.0 handler:^(NSError * _Nullable error) {
         
     }];
-    XCTAssert(testBool, @"basic URL test Download");
+    XCTAssert(testBool, @"basic download test");
 }
 
 -(void)testMultiDownload{
@@ -80,7 +80,7 @@ NSString *baseURL = @"https://httpbin.org/";
     [self waitForExpectationsWithTimeout:3.0 handler:^(NSError * _Nullable error) {
         
     }];
-    XCTAssert(testBool, @"basic URL test Download");
+    XCTAssert(testBool, @"Multiple Download files test");
 }
 
 -(void)testForm{
@@ -112,7 +112,7 @@ NSString *baseURL = @"https://httpbin.org/";
     [self waitForExpectationsWithTimeout:3.0 handler:^(NSError * _Nullable error) {
         
     }];
-    XCTAssert(testBool, @"basic URL test Download");
+    XCTAssert(testBool, @"basic form post request test");
 }
 
 @end
