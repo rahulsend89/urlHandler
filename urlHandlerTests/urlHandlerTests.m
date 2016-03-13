@@ -109,7 +109,7 @@ NSString *baseURL = @"https://httpbin.org/";
             NSLog(@"error : %@",error);
         }
     }];
-    [self waitForExpectationsWithTimeout:3.0 handler:^(NSError * _Nullable error) {
+    [self waitForExpectationsWithTimeout:5.0 handler:^(NSError * _Nullable error) {
         
     }];
     XCTAssert(testBool, @"basic form post request test");
