@@ -37,7 +37,6 @@
     self = [super init];
     if (self) {
         _currentVal = 0;
-        self.dictionary = [NSMutableDictionary dictionary];
     }
     return self;
 }
