@@ -130,7 +130,8 @@ NSString *baseURL = @"https://httpbin.org/";
                           @"phone":@"9821829923",
                           @"file":fileInfo
                           };
-    [[UrlHandler sharedInstance] multipleFormUrl:finalURL :@"POST" postDictionary:dic progressBlock:^(float pre) {
+    UrlHandler *urlInst = [[UrlHandler alloc] init];
+     [urlInst multipleFormUrl:finalURL :@"POST" postDictionary:dic progressBlock:^(float pre) {
         NSLog(@"progress :%f",pre);
     } completionBlock:^(NSError *error, id returnObject) {
         NSLog(@"error : %@:%@",error,returnObject);

@@ -149,7 +149,12 @@
         }
     }];
 }
-
+-(NSMutableDictionary *)dictionary{
+    if (_dictionary == nil){
+        _dictionary = [NSMutableDictionary dictionary];
+    }
+    return _dictionary;
+}
 - (NSMutableData *)dataForConnection:(NSURLConnection *)connection {
 
     NSString *key = [NSString stringWithFormat:@"%p", connection];
