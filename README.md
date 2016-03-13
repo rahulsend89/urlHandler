@@ -1,6 +1,12 @@
 urlHandler
 ==========
 
+[![Build Status](https://travis-ci.org/rahulsend89/urlHandler.svg?branch=master)](https://travis-ci.org/rahulsend89/urlHandler)
+[![codecov.io](https://codecov.io/github/rahulsend89/urlHandler/coverage.svg?branch=master)](https://codecov.io/github/rahulsend89/urlHandler?branch=master)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=fla )](http://mit-license.org)
+[![Platform](http://img.shields.io/badge/platform-ios-lightgrey.svg?style=flat)](https://developer.apple.com/resources/)
+[![Language](http://img.shields.io/badge/language-ObjectiveC-orange.svg?style=flat)](https://developer.apple.com/Objectivec) 
+
 Easy way to work with NSURL in Objective-C 
 
 ## CocoaPods
