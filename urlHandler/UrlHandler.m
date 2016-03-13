@@ -18,6 +18,7 @@
 @property long long expectedContentLength;
 @property long long progressContentLength;
 @property (nonatomic, strong) NSError *error;
+@property(strong, nonatomic) NSMutableDictionary *dictionary;
 @end
 
 @implementation UrlHandler
@@ -36,6 +37,7 @@
     self = [super init];
     if (self) {
         _currentVal = 0;
+        self.dictionary = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -129,6 +131,8 @@
                 [self.downloadStream open];
                 
                 self.connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
+                NSString *key = [NSString stringWithFormat:@"%p", self.connection];
+                self.dictionary[key] = [NSMutableData data];
                 [self.connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
                 [self.connection start];
                 
@@ -145,6 +149,18 @@
         }
     }];
 }
+
+- (NSMutableData *)dataForConnection:(NSURLConnection *)connection {
+
+    NSString *key = [NSString stringWithFormat:@"%p", connection];
+    return self.dictionary[key];
+}
+- (void)removeConnection:(NSURLConnection *)connection {
+
+    NSString *key = [NSString stringWithFormat:@"%p", connection];
+    return [self.dictionary removeObjectForKey:key];
+}
+
 -(void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
     if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
         NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
@@ -166,6 +182,8 @@
 }
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
+    NSMutableData *responseData = [self dataForConnection:connection];
+    [responseData appendData:data];
     if (!self.downloading) {
         return;
     }
@@ -193,7 +211,11 @@
     if (self.mainfilename) {
         _completionHandler(nil,self.mainfilename);
     }else{
-        _completionHandler(nil,@"uploadingCompleted");
+        NSError *error;
+        NSMutableData *responseData = [self dataForConnection:connection];
+        NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseData options: 0 error: &error];
+        _completionHandler(nil,result);
+        [self removeConnection:connection];
     }
 }
 -(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
@@ -327,6 +349,8 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite{
                 [formRequestBody appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", formRequestBodyBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
                 [request setHTTPBody:formRequestBody];
                 self.connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
+                NSString *key = [NSString stringWithFormat:@"%p", self.connection];
+                self.dictionary[key] = [NSMutableData data];
                 [self.connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
                 [self.connection start];
                 if (!self.connection) {

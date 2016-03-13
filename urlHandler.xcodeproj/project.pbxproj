@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		AAF6BA84023615294F78DF70 /* Pods_urlHandlerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EFFFA250F82E5EB5C4F2F02 /* Pods_urlHandlerTests.framework */; };
 		B2C95C2585FCB087A040809A /* Pods_urlHandler.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A00FBDED72FA3991D6F9458 /* Pods_urlHandler.framework */; };
+		BE4467301C95DB280013AFBA /* img.png in Resources */ = {isa = PBXBuildFile; fileRef = BE44672F1C95DB280013AFBA /* img.png */; };
 		BE53CE4519EA88CC00B6C81D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BE53CE4419EA88CC00B6C81D /* main.m */; };
 		BE53CE4819EA88CC00B6C81D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BE53CE4719EA88CC00B6C81D /* AppDelegate.m */; };
 		BE53CE4B19EA88CC00B6C81D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BE53CE4A19EA88CC00B6C81D /* ViewController.m */; };
@@ -17,7 +18,6 @@
 		BE53CE5319EA88CC00B6C81D /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = BE53CE5119EA88CC00B6C81D /* LaunchScreen.xib */; };
 		BE53CE5F19EA88CC00B6C81D /* urlHandlerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BE53CE5E19EA88CC00B6C81D /* urlHandlerTests.m */; };
 		BE53CE6A19EA893900B6C81D /* UrlHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BE53CE6919EA893900B6C81D /* UrlHandler.m */; };
-		BED46E8219FF677C0080BA4B /* img.jpg in Resources */ = {isa = PBXBuildFile; fileRef = BED46E8119FF677C0080BA4B /* img.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +36,7 @@
 		7A00FBDED72FA3991D6F9458 /* Pods_urlHandler.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_urlHandler.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8B4267C254749B90B03FDF1 /* Pods-urlHandler.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-urlHandler.debug.xcconfig"; path = "Pods/Target Support Files/Pods-urlHandler/Pods-urlHandler.debug.xcconfig"; sourceTree = "<group>"; };
 		BE12E7E01C84B68000760F6B /* libPods.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPods.a; path = "Pods/build/Debug-iphoneos/libPods.a"; sourceTree = "<group>"; };
+		BE44672F1C95DB280013AFBA /* img.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = img.png; sourceTree = "<group>"; };
 		BE53CE3F19EA88CC00B6C81D /* urlHandler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = urlHandler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE53CE4319EA88CC00B6C81D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BE53CE4419EA88CC00B6C81D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -51,7 +52,6 @@
 		BE53CE5E19EA88CC00B6C81D /* urlHandlerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = urlHandlerTests.m; sourceTree = "<group>"; };
 		BE53CE6819EA893900B6C81D /* UrlHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UrlHandler.h; sourceTree = "<group>"; };
 		BE53CE6919EA893900B6C81D /* UrlHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UrlHandler.m; sourceTree = "<group>"; };
-		BED46E8119FF677C0080BA4B /* img.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = img.jpg; sourceTree = "<group>"; };
 		E06516FAB9F89872FEC636E5 /* Pods-urlHandler.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-urlHandler.release.xcconfig"; path = "Pods/Target Support Files/Pods-urlHandler/Pods-urlHandler.release.xcconfig"; sourceTree = "<group>"; };
 		E54D830BB498132001E56276 /* Pods-urlHandlerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-urlHandlerTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-urlHandlerTests/Pods-urlHandlerTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -110,7 +110,7 @@
 		BE53CE4119EA88CC00B6C81D /* urlHandler */ = {
 			isa = PBXGroup;
 			children = (
-				BED46E8119FF677C0080BA4B /* img.jpg */,
+				BE44672F1C95DB280013AFBA /* img.png */,
 				BE53CE4619EA88CC00B6C81D /* AppDelegate.h */,
 				BE53CE4719EA88CC00B6C81D /* AppDelegate.m */,
 				BE53CE4919EA88CC00B6C81D /* ViewController.h */,
@@ -255,7 +255,7 @@
 				BE53CE4E19EA88CC00B6C81D /* Main.storyboard in Resources */,
 				BE53CE5319EA88CC00B6C81D /* LaunchScreen.xib in Resources */,
 				BE53CE5019EA88CC00B6C81D /* Images.xcassets in Resources */,
-				BED46E8219FF677C0080BA4B /* img.jpg in Resources */,
+				BE4467301C95DB280013AFBA /* img.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

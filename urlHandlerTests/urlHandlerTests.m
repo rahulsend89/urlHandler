@@ -115,4 +115,42 @@ NSString *baseURL = @"https://httpbin.org/";
     XCTAssert(testBool, @"basic form post request test");
 }
 
+-(void)testFormRequestWithFile{
+    NSString *description = [NSString stringWithFormat:@"POST %@ form with File", baseURL];
+    XCTestExpectation *expectation = [self expectationWithDescription:description];
+    __block BOOL testBool = false;
+    NSString *finalURL = [baseURL stringByAppendingString:@"post"];
+    NSData *imageData = UIImageJPEGRepresentation([UIImage imageNamed:@"img.png"], 90);
+    NSDictionary *fileInfo = @{ @"data":imageData, @"contentType":@"image/jpeg", @"fileName":@"image.jpeg", @"key":@"userfile" };
+    NSDictionary* dic = @{
+                          @"comment":@"this is a comment",
+                          @"email":@"awesome@cool.awesome",
+                          @"pincode":@"100000",
+                          @"name":@"Rahul Emosewa",
+                          @"phone":@"9821829923",
+                          @"file":fileInfo
+                          };
+    [[UrlHandler sharedInstance] multipleFormUrl:finalURL :@"POST" postDictionary:dic progressBlock:^(float pre) {
+        NSLog(@"progress :%f",pre);
+    } completionBlock:^(NSError *error, id returnObject) {
+        NSLog(@"error : %@:%@",error,returnObject);
+        NSDictionary *getFormObject = (NSDictionary*)[returnObject valueForKey:@"form"];
+        NSData *filesInfoObject = [[returnObject valueForKey:@"files"] valueForKey:@"userfile"];
+        if ([filesInfoObject isEqual:fileInfo]){
+            //awesome file are also matching
+        }
+        if ([getFormObject[@"name"]  isEqual: @"Rahul Emosewa"] && [getFormObject[@"phone"]  isEqual: @"9821829923"] && [getFormObject[@"email"] isEqual:@"awesome@cool.awesome" ] && [getFormObject[@"comment"] isEqual:@"this is a comment"]){
+            testBool = true;
+        }else{
+            testBool = false;
+        }
+        [expectation fulfill];
+    }];
+    
+    [self waitForExpectationsWithTimeout:10.0 handler:^(NSError * _Nullable error) {
+        
+    }];
+    XCTAssert(testBool, @"Multiple Download files test");
+}
+
 @end
