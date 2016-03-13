@@ -83,4 +83,36 @@ NSString *baseURL = @"https://httpbin.org/";
     XCTAssert(testBool, @"basic URL test Download");
 }
 
+-(void)testForm{
+    NSString *description = [NSString stringWithFormat:@"POST %@ formRequest", baseURL];
+    XCTestExpectation *expectation = [self expectationWithDescription:description];
+    __block BOOL testBool = false;
+    NSString *finalURL = [baseURL stringByAppendingString:@"post"];
+    NSDictionary *dic = @{
+                          @"name":@"awesome",
+                          @"email":@"awesome@cool.awesome",
+                          };
+    [[UrlHandler sharedInstance] basicFormURL:finalURL :@"POST" :dic :^(NSError *error, id returnObject) {
+        if(error != (NSError*)[NSNull null] && ![returnObject isEqualToString:@"notReachable"]){
+            NSLog(@"returnObject : %@",returnObject);
+            NSData *webData = [returnObject dataUsingEncoding:NSUTF8StringEncoding];
+            NSError *error;
+            NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:webData options:0 error:&error];
+            NSDictionary *getFormObject = (NSDictionary*)[jsonDict valueForKey:@"form"];
+            if ([getFormObject[@"name"]  isEqual: @"awesome"] && [getFormObject[@"email"]  isEqual: @"awesome@cool.awesome"]){
+                testBool = true;
+            }else{
+                testBool = false;
+            }
+            [expectation fulfill];
+        }else{
+            NSLog(@"error : %@",error);
+        }
+    }];
+    [self waitForExpectationsWithTimeout:3.0 handler:^(NSError * _Nullable error) {
+        
+    }];
+    XCTAssert(testBool, @"basic URL test Download");
+}
+
 @end
